@@ -1,0 +1,261 @@
+﻿@{
+    ViewBag.Title = "Báo cáo";
+    ViewBag.ContentTitle = "Báo cáo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-md-6">
+        <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-info active btn-action" data-value="@DateTime.Now.ToString("dd/MM/yyyy")">
+                <input type="radio" name="day" autocomplete="off" value=""> Ngày
+            </label>
+            <label class="btn btn-info btn-action" data-value="@DateTime.Now.ToString("MM/yyyy")">
+                <input type="radio" name="month" autocomplete="off" value=""> Tháng
+            </label>
+            <label class="btn btn-info btn-action" data-value="@DateTime.Now.ToString("yyyy")">
+                <input type="radio" name="year" autocomplete="off" value=""> Năm
+            </label>
+        </div>
+    </div>
+    <div class="col-md-3 pull-right">
+        <div class="input-group date datetimepicker">
+            <input type="text" class="form-control" id="datetime" name="datetime" autocomplete="off" value=""
+                   placeholder="Nhập thời gian (dd/mm/yyyy)" data-toggle="tooltip" data-placement="left" title="Nhập thời gian (dd/mm/yyyy)" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+    </div>
+</div>
+<div class="clearfix mb10"></div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <h3 class="panel-title">Báo cáo tổng hợp</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-4">Đã thanh toán: </label>
+                    <span id="totalPaid" class="col-md-8 priceVND">0</span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Còn nợ: </label>
+                    <span id="totalNotPay" class="col-md-8 priceVND">0</span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Tổng tiền: </label>
+                    <span id="totalPay" class="col-md-8 priceVND">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Báo cáo quản lý gym</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-4">Số lượng học viên: </label>
+                    <span id="gymQtyCustomer" class="col-md-8" data-value="0">0 Người</span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Số lượng khách: </label>
+                    <span id="gymQtyClient" class="col-md-8" data-value="0">0 Người</span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Đã thanh toán: </label>
+                    <span id="gymPaid" class="col-md-8 priceVND" data-value="0">0</span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Còn nợ: </label>
+                    <span id="gymNotPay" class="col-md-8 priceVND" data-value="0">0</span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Tổng tiền: </label>
+                    <span id="gymPay" class="col-md-8 priceVND" data-value="0">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">Báo cáo quản lý bán hàng</h3>
+            </div>
+            <div class="panel-body">
+                <div class="list-group">
+                    <div>
+                        <h4 class="list-group-item-heading">Đã thanh toán</h4>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">S.L sản phẩm: </label>
+                            <span id="billPaidItem" class="col-md-8">0</span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">S.L đã bán: </label>
+                            <span id="billPaidQty" class="col-md-8">0</span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">Tổng tiền: </label>
+                            <span id="billPaidPrice" class="col-md-8 priceVND" data-value="0">0</span>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <hr />
+                    <div>
+                        <h4 class="list-group-item-heading">Còn nợ</h4>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">S.L sản phẩm: </label>
+                            <span id="billNotPayItem" class="col-md-8">0</span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">S.L đã bán: </label>
+                            <span id="billNotPayQty" class="col-md-8">0</span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <label class="control-label col-md-4">Tổng tiền: </label>
+                        <span id="billNotPayPrice" class="col-md-8 priceVND" data-value="0">0</span>
+                    </div>
+                    <div class="clearfix"></div>
+                    <hr />
+                    <div>
+                        <h4 class="list-group-item-heading">Tổng</h4>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">S.L sản phẩm: </label>
+                            <span id="billPayItem" class="col-md-8">0</span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">S.L đã bán: </label>
+                            <span id="billPayQty" class="col-md-8">0</span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">Tổng tiền: </label>
+                            <span id="billPayPrice" class="col-md-8 priceVND" data-value="0">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptList {
+    @Html.Partial("ScriptList")
+    <script type="text/javascript">
+        //$(function () {
+        //    $('.datetimepicker').datetimepicker({
+        //        defaultDate: new Date(),
+        //        format: 'DD/MM/YYYY',
+        //    });
+        //});
+        function defaultValue() {
+            $('#gymQtyCustomer').html('0 Người');
+            $('#gymQtyClient').html('0 Người');
+            $('#gymPaid').html('0');
+            $('#gymPaid').attr('data-value', '0');
+            $('#gymNotPay').html('0');
+            $('#gymNotPay').attr('data-value', '0');
+            $('#gymPay').html('0');
+            $('#gymPay').attr('data-value', '0');
+
+            $('#billPaidItem').html('0');
+            $('#billPaidQty').html('0');
+            $('#billPaidPrice').html('0');
+            $('#billPaidPrice').attr('data-value', '0');
+
+            $('#billNotPayItem').html('0');
+            $('#billNotPayQty').html('0');
+            $('#billNotPayPrice').html('0');
+            $('#billNotPayPrice').attr('data-value', '0');
+
+            $('#billPayItem').html('0');
+            $('#billPayQty').html('0');
+            $('#billPayPrice').html('0');
+            $('#billPayPrice').attr('data-value', '0');
+
+            $('#totalPaid').html('0');
+            $('#totalNotPay').html('0');
+            $('#totalPay').html('0');
+        }
+        function getReport(datetime) {
+            $.get('@Url.Action("Report")', { data: datetime }, function (d) {
+                console.log(d)
+                if (d) {
+                    if (d.QtyCustomer && d.QtyCustomer[0].Value != null) {
+                        $('#gymQtyCustomer').html(d.QtyCustomer[0].Value + ' Người');
+
+                    }
+                    if (d.QtyClient && d.QtyClient[0].Value != null) {
+                        $('#gymQtyClient').html(d.QtyClient[0].Value + ' Người');
+                    }
+                    if (d.cardPerson) {
+                        if (d.cardPerson[0].Value != null) {
+                            $('#gymPaid').html(d.cardPerson[0].Value.format());
+                            $('#gymPaid').attr('data-value', d.cardPerson[0].Value);
+                        }
+                        if (d.cardPerson[1].Value != null) {
+                            $('#gymNotPay').html(d.cardPerson[1].Value.format());
+                            $('#gymNotPay').attr('data-value', d.cardPerson[1].Value);
+                        }
+                        if (d.cardPerson[2].Value != null) {
+                            $('#gymPay').html(d.cardPerson[2].Value.format());
+                            $('#gymPay').attr('data-value', d.cardPerson[2].Value);
+                        }
+                    }
+                    if (d.bill) {
+                        var bill = d.bill;
+                        if (bill.billPaid[0].Value != null)
+                            $('#billPaidItem').html(bill.billPaid[0].Value);
+                        if (bill.billPaid[1].Value != null)
+                            $('#billPaidQty').html(bill.billPaid[1].Value);
+                        if (bill.billPaid[2].Value != null) {
+                            $('#billPaidPrice').html(bill.billPaid[2].Value.format());
+                            $('#billPaidPrice').attr('data-value', bill.billPaid[2].Value);
+                        }
+
+                        if (bill.billNotPay[0].Value != null)
+                            $('#billNotPayItem').html(bill.billNotPay[0].Value);
+                        if (bill.billNotPay[1].Value != null)
+                            $('#billNotPayQty').html(bill.billNotPay[1].Value);
+                        if (bill.billNotPay[2].Value != null) {
+                            $('#billNotPayPrice').html(bill.billNotPay[2].Value.format());
+                            $('#billNotPayPrice').attr('data-value', bill.billNotPay[2].Value);
+                        }
+
+                        if (bill.billPay[0].Value != null)
+                            $('#billPayItem').html(bill.billPay[0].Value);
+                        if (bill.billPay[1].Value != null)
+                            $('#billPayQty').html(bill.billPay[1].Value);
+                        if (bill.billPay[2].Value != null) {
+                            $('#billPayPrice').html(bill.billPay[2].Value.format());
+                            $('#billPayPrice').attr('data-value', bill.billPay[2].Value);
+                        }
+                    }
+                    $('#totalPaid').html((parseFloat($('#billPaidPrice').attr('data-value')) + parseFloat($('#gymPaid').attr('data-value'))).format());
+                    $('#totalNotPay').html((parseFloat($('#billNotPayPrice').attr('data-value')) + parseFloat($('#gymNotPay').attr('data-value'))).format());
+                    $('#totalPay').html((parseFloat($('#billPayPrice').attr('data-value')) + parseFloat($('#gymPay').attr('data-value'))).format());
+                }
+            })
+        }
+        @*$(function () {
+            getReport(@DateTime.Now.ToString("dd/MM/yyyy"));
+        });*@
+        $('.btn-action').on('click', function () {
+            defaultValue();
+            getReport($(this).attr('data-value'));
+        })
+        $('#datetime').on('change', function () {
+            defaultValue();
+            getReport($(this).val());
+        })
+    </script>
+}

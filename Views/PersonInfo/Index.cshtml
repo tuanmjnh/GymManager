@@ -1,0 +1,89 @@
+﻿@model PagedList.IPagedList<GymManager.Models.sub_item>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Quản lý thông số";
+    ViewBag.ContentTitle = "Danh sách thông số";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p class="pull-left">
+    <button onclick="window.location='@Url.Action("Create")'" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> @VinaphoneCommon.Language.addnew</button>
+</p>
+<div class="pull-right col-md-3 row mb10">
+    <div class="show-trash">
+        @if (ViewBag.flag == 0)
+        {
+            <a href="javascript:;" class="glyphicon glyphicon-refresh btn btn-info btn-flag btn-chk" data-toggle="tooltip" title="Khôi phục tất cả" style="display:none"></a>
+            if (VinaphoneCommon.Auth.isAuth() && VinaphoneCommon.Auth.inRoles(new string[] { VinaphoneCommon.roles.admin, VinaphoneCommon.roles.superadmin }))
+            {
+                <a href="javascript:;" class="glyphicon glyphicon-remove btn btn-danger btn-trash btn-chk" data-toggle="tooltip" title="Xóa vĩnh viễn" style="display:none"></a>
+            }
+            @Html.ActionLink(" ", "Index", new { order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 }, new { @class = "glyphicon glyphicon-th-list btn btn-default", @data_toggle = "tooltip", @title = "Hiển thị sử dụng" })
+            @Html.ActionLink(" ", "Index", new { order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 }, new { @class = "glyphicon glyphicon-retweet btn btn-default active ml4", @data_toggle = "tooltip", @title = "Hiển thị nháp", })
+        }
+        else
+        {
+            <a href="javascript:;" class="glyphicon glyphicon-trash btn btn-danger btn-flag btn-chk" data-toggle="tooltip" title="Xóa tất cả" style="display:none"></a>
+            @Html.ActionLink(" ", "Index", new { order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 }, new { @class = "glyphicon glyphicon-th-list btn btn-default active", @data_toggle = "tooltip", @title = "Hiển thị sử dụng" })
+            @Html.ActionLink(" ", "Index", new { order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 }, new { @class = "glyphicon glyphicon-retweet btn btn-default ml4", @data_toggle = "tooltip", @title = "Hiển thị nháp", })
+        }
+    </div>
+</div>
+@Html.Partial("search")
+<div class="clearfix"></div>
+@if (Model.Count() < 1)
+{
+    <div class="alert alert-warning" role="alert">@VinaphoneCommon.Language.emptydb</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-head">
+            <thead>
+                <tr>
+                    <th class="tbl-index">STT</th>
+                    <th>
+                        @Html.ActionLink("Tên thông số cơ thể", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "value_asc" ? "value_desc" : "value_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th class="tbl-checkbox">
+                        <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int index = 0;}
+                @foreach (var item in Model)
+                {
+                    index += 1;
+                    <tr id="@item.id">
+                        <td class="center">@(index + (Model.PageNumber - 1) * Model.PageSize)</td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id)">@Html.DisplayFor(m => item.value)</a>
+                        </td>
+                        <td class="tbl-checkbox">
+                            <label><input type="checkbox" name="checkbox" value="@Html.DisplayFor(m => item.id)" class="chkitem" /></label>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination-list">
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+                         new
+                         {
+                             page,
+                             order = ViewBag.order,
+                             currentFilter = ViewBag.currentFilter,
+                             flag = ViewBag.flag
+                         }))
+    </div>
+                    }
+@section ScriptList { @Html.Partial("ScriptList")}

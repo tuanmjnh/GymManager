@@ -1,0 +1,174 @@
+﻿@model GymManager.Models.item
+
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+    ViewBag.ContentTitle = "Thêm mới sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.id)
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin khách hàng</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="title">Tên sản phẩm</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" data-val="true"
+                                   data-val-required="Vui lòng nhập tên sản phẩm" id="title" name="title" type="text" value="@Html.DisplayFor(m=>m.title)">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="title" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="quantity">Danh mục sản phẩm</label>
+                        <div class="col-md-9 asterisk">
+                            <select id="group_id" name="group_id" class="form-control">
+                                @foreach (var item in (List<GymManager.Models.group>)ViewBag.group)
+                                {
+                                    var level = "";
+                                    for (int i = 0; i < item.level; i++)
+                                    {
+                                        level += "&nbsp;&nbsp;";
+                                    }
+                                    <option @(ViewBag.Group_id != null && ViewBag.Group_id == item.id ? "selected" : "") value="@item.id" level="@item.level">@Html.Raw(level) - @item.title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="price_old">Giá ban đầu</label>
+                        <div class="col-md-9 asterisk input-group pl-pr15">
+                            <span class="input-group-addon btn-pointer random-cart">VNĐ</span>
+                            <input class="form-control text-box single-line" data-val="true"
+                                   data-val-required="Vui lòng nhập giá ban đầu" id="price_old" name="price_old" type="number" value="@(Model.price_old.HasValue? Model.price_old.Value.ToString("0"):"0")">
+                        </div>
+                        <span class="field-validation-valid text-danger" data-valmsg-for="price_old" data-valmsg-replace="true"></span>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="price">Giá bán</label>
+                        <div class="col-md-9 asterisk input-group pl-pr15">
+                            <span class="input-group-addon btn-pointer random-cart">VNĐ</span>
+                            <input class="form-control text-box single-line" data-val="true"
+                            data-val-required="Vui lòng nhập giá khuyến mại" id="price" name="price" type="number" value="@(Model.price.HasValue ? Model.price.Value.ToString("0") : "0")">
+                        </div>
+                        <span class="field-validation-valid text-danger" data-valmsg-for="price" data-valmsg-replace="true"></span>
+                    </div>
+
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin thêm</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="images">Hình ảnh</label>
+                        <div class="col-md-9">
+                            <input type="file" id="file-images" name="images" class="form-control" multiple>
+                        </div>
+                        <div class="clearfix mb20"></div>
+                        <div class="col-md-12 images-list">
+                            @if (Model.images != null)
+                            {
+                                var images = Model.images.Split(',');
+                                foreach (var item in images)
+                                {
+                                    <img src="~/@(GymManager.Controllers.DirUpload.imagesProduct + item)" />
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ghi chú</h3>
+                </div>
+                <div class="panel-body">
+                    <textarea id="desc" name="desc" class="tinymce">@Html.Raw(Model.desc)</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-5" for="desc">Mã sản phẩm</label>
+                        <div class="col-md-7 asterisk input-group pl-pr15">
+                            <h3 class="label label-success" style="font-size:150%"><i class="fa fa-qrcode" aria-hidden="true"></i> @Html.DisplayFor(m => m.code_key)</h3>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-5" for="desc">Tổng số lượng</label>
+                        <div class="col-md-7 asterisk input-group pl-pr15">
+                            <h3 class="label label-success" style="font-size:100%"><i class="fa fa-shopping-basket" aria-hidden="true"></i> @Html.DisplayFor(m => m.quantity_total)</h3>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-5" for="desc">Số lượng hiện có</label>
+                        <div class="col-md-7 asterisk input-group pl-pr15">
+                            <h3 class="label label-success" style="font-size:100%"><i class="fa fa-shopping-bag" aria-hidden="true"></i> @Html.DisplayFor(m => m.quantity)</h3>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-5" for="quantity_add">Thêm số lượng</label>
+                        <div class="col-md-7 asterisk">
+                            <input class="form-control text-box single-line" data-val="true"
+                                   data-val-required="Vui lòng nhập số lượng sản phẩm" id="quantity_add" name="quantity_add" type="number" value="0">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="quantity_add" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người lập</label>
+                        <label class="col-md-9">@GymManager.Controllers.BaseController.GetUser(Model.created_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày lập</label>
+                        <label class="col-md-9">@(Model.created_at.HasValue ? Model.created_at.Value.ToString("dd/MM/yyyy hh:mm") : VinaphoneCommon.Language.emptyvl)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người sửa</label>
+                        <label class="col-md-9">@GymManager.Controllers.BaseController.GetUser(Model.updated_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày sửa</label>
+                        <label class="col-md-9">@(Model.updated_at.HasValue ? Model.updated_at.Value.ToString("dd/MM/yyyy hh:mm") : VinaphoneCommon.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" @(Model.flag == 1 ? "checked" : "") /> @VinaphoneCommon.Language.active</label>
+                            <label><input type="radio" name="flag" value="0" @(Model.flag == 0 ? "checked" : "") /> @VinaphoneCommon.Language.draft</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@VinaphoneCommon.Language.update" class="btn btn-primary" />
+                    @Html.ActionLink(VinaphoneCommon.Language.backlink, "Index", null, new { @class = "btn btn-info" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        $('#file-images').readURL({ width: 128 });
+    </script>
+}

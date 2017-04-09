@@ -1,0 +1,105 @@
+﻿@*@model IEnumerable<GymManager.Models.item>*@
+@model PagedList.IPagedList<GymManager.Models.item>
+@using PagedList.Mvc;
+
+@Html.Partial("searchPartial")
+<div class="clearfix"></div>
+@if (Model.Count() < 1)
+{
+    <div class="alert alert-warning" role="alert">@VinaphoneCommon.Language.emptydb</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-head">
+            <thead>
+                <tr>
+                    <th class="tbl-index">STT</th>
+                    <th>
+                        <a href="#" class="orderby" data-url="@Url.Action("ProductList",
+                                             new
+                                             {
+                                                 order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "key_asc" ? "key_desc" : "key_asc",
+                                                 currentFilter = ViewBag.currentFilter,
+                                                 flag = ViewBag.flag,
+                                             })">Mã</a>
+                    </th>
+                    <th>
+                        <a href="#" class="orderby" data-url="@Url.Action("ProductList",
+                                             new
+                                             {
+                                                 order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                                                 currentFilter = ViewBag.currentFilter,
+                                                 flag = ViewBag.flag,
+                                             })">Tên sản phẩm</a>
+                    </th>
+                    <th>
+                        <a href="#" class="orderby" data-url="@Url.Action("ProductList",
+                                             new
+                                             {
+                                                 order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "quantity_asc" ? "quantity_desc" : "quantity_asc",
+                                                 currentFilter = ViewBag.currentFilter,
+                                                 flag = ViewBag.flag,
+                                             })">Số lượng trong kho</a>
+                    </th>
+                    <th>
+                        <a href="#" class="orderby" data-url="@Url.Action("ProductList",
+                                             new
+                                             {
+                                                 order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "priceOld_asc" ? "priceOld_desc" : "priceOld_asc",
+                                                 currentFilter = ViewBag.currentFilter,
+                                                 flag = ViewBag.flag,
+                                             })">Giá ban đầu</a>
+                    </th>
+                    <th>
+                        <a href="#" class="orderby" data-url="@Url.Action("ProductList",
+                                             new
+                                             {
+                                                 order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "price_asc" ? "price_desc" : "price_asc",
+                                                 currentFilter = ViewBag.currentFilter,
+                                                 flag = ViewBag.flag,
+                                             })">Giá bán</a>
+                    </th>
+                    <th>Số lượng</th>
+                    <th class="tbl-checkbox">
+                        <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int index = 0;}
+                @foreach (var item in Model)
+                {
+                    index += 1;
+                    <tr id="@item.id">
+                        <td class="center">@(index + (Model.PageNumber - 1) * Model.PageSize)</td>
+                        <td>@Html.DisplayFor(m => item.code_key)</td>
+                        <td>@Html.DisplayFor(m => item.title)</td>
+                        <td>@Html.DisplayFor(m => item.quantity)</td>
+                        <td>
+                            <span class="priceVND">@(item.price_old != null ? item.price_old.ToString() : "0")</span>
+                            <input type="hidden" id="itemPriceOld" value="@(item.price_old != null ? item.price_old : 0)" />
+                        </td>
+                        <td>
+                            <span class="priceVND">@(item.price != null ? item.price.ToString() : "0")</span>
+                            <input type="hidden" id="itemPrice" value="@(item.price != null ? item.price : 0)" />
+                        </td>
+                        <td class="col-md-1"><input type="number" name="quantity" class="form-control" value="1" /></td>
+                        <td class="tbl-checkbox"><input type="checkbox" name="checkbox" value="@Html.DisplayFor(m => item.id)" class="chkitem" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination-list">
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
+        @Html.PagedListPager(Model, page => Url.Action("ProductList",
+                         new
+                         {
+                             page,
+                             order = ViewBag.order,
+                             currentFilter = ViewBag.currentFilter,
+                             flag = ViewBag.flag
+                         }))
+    </div>
+                    }

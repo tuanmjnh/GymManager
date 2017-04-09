@@ -1,0 +1,280 @@
+﻿@model GymManager.Models.bill
+
+@{
+    ViewBag.Title = "Quản lý Hóa đơn";
+    ViewBag.ContentTitle = "Chi tiết hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.id)
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin hóa đơn: <span class="label label-danger label-maxsie">@Html.DisplayFor(m => m.code_key)</span></h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="customer_id">Tên khách hàng</label>
+                        <div class="col-md-9 asterisk">
+                            <label class="label label-success label-maxsie label-details">@Html.DisplayFor(m => m.customer_id)</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="customer_id">Số lượng sản phẩm</label>
+                        <div class="col-md-9 asterisk">
+                            <label class="label label-success label-maxsie label-details">@Html.DisplayFor(m => m.total_item)</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="customer_id">Tổng số lượng mua</label>
+                        <div class="col-md-9 asterisk">
+                            <label class="label label-success label-maxsie label-details">@Html.DisplayFor(m => m.total_quantity)</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="customer_id">Tổng tiền thanh toán</label>
+                        <div class="col-md-9 asterisk">
+                            <label class="label label-success label-maxsie label-details priceVND">@(Model.total_price.HasValue ? Model.total_price.Value.ToString() : "0")</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <table id="TableProductSelected" class="table table-hover table-bordered table-head table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ decimal total = 0, price = 0; long quantity = 0;}
+                                @foreach (var item in (List<GymManager.Models.sub_bill>)ViewBag.sub_bill)
+                                {
+                                    quantity += item.quantity.HasValue ? item.quantity.Value : 0;
+                                    price += item.price.HasValue ? item.price.Value : 0;
+                                    total += item.total_price.HasValue ? item.total_price.Value : 0;
+                                    <tr>
+                                        <td>@item.code_key</td>
+                                        <td>@item.title</td>
+                                        <td>@item.quantity</td>
+                                        <td class="priceVND">@(item.price.HasValue ? item.price.Value.ToString() : VinaphoneCommon.Language.emptyvl)</td>
+                                        <td class="priceVND">@(item.total_price.HasValue ? item.total_price.Value.ToString() : VinaphoneCommon.Language.emptyvl)</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td colspan="2"><b>Tổng cộng</b></td>
+                                    <td><b>@quantity</b></td>
+                                    <td class="priceVND">@price.ToString()</td>
+                                    <td class="priceVND">@total.ToString()</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin thêm</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="desc">Chú thích</label>
+                        <div class="col-md-9 asterisk">
+                            <textarea name="desc" class="desc-details col-md-12 tinymce">@Html.Raw(Model.desc)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người lập</label>
+                        <label class="col-md-9">@GymManager.Controllers.BaseController.GetUser(Model.created_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày lập</label>
+                        <label class="col-md-9">@(Model.created_at.HasValue ? Model.created_at.Value.ToString("dd/MM/yyyy hh:mm") : VinaphoneCommon.Language.emptyvl)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người sửa</label>
+                        <label class="col-md-9">@GymManager.Controllers.BaseController.GetUser(Model.updated_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày sửa</label>
+                        <label class="col-md-9">@(Model.updated_at.HasValue ? Model.updated_at.Value.ToString("dd/MM/yyyy hh:mm") : VinaphoneCommon.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        @if (Model.flag == 0)
+                        {
+                            <div class="checkbox">
+                                <label><input type="radio" name="flag" value="1" @(Model.flag == 1 ? "checked" : "") /> Thanh toán</label>
+                                <label><input type="radio" name="flag" value="0" @(Model.flag == 0 ? "checked" : "") /> Nợ</label>
+                            </div>
+                        }
+                        else
+                        {
+                            <label class="label label-success">Đã thanh toán</label>
+                        }
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    @if (Model.flag == 0)
+                    {
+                        <input type="submit" value="@VinaphoneCommon.Language.update" class="btn btn-primary" />
+                    }
+                    @Html.ActionLink(VinaphoneCommon.Language.backlink, "Index", null, new { @class = "btn btn-info" })
+                </div>
+            </div>
+        </div>
+    </div>
+                                    }
+<!-- Modal -->
+<div class="modal fade bs-example-modal-lg" id="ModalProductList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-url='@Url.Action("ProductList")'>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-toggle="tooltip" data-placement="right" title="Đóng"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Chọn sản phẩm</h4>
+            </div>
+            <div class="modal-body">
+                <div id="posts-wrapper"></div>
+            </div>
+            <div class="modal-footer">
+                <span type="button" class="btn btn-default" data-dismiss="modal">Quay lại</span>
+                <span type="button" class="btn btn-primary selected" data-dismiss="modal">Chọn</span>
+            </div>
+        </div>
+    </div>
+</div>
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        $.fn.TMCheckBox(".chkall", ".chkitem", ".btn-chk");
+        $('#customer_id').autocomplete({
+            source: '@Url.Action("getCustomer")',
+            minLength: 2
+        });
+        @*$(function () {
+            $('#customer_id').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("getCustomer")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { customer_id: request.term },
+                        success: function (data) {
+                            console.log(data)
+                            response($.map(data, function (item) {
+                                return { label: item.full_name, value: item.full_name };
+                            }))
+
+                        }
+                    })
+                },
+                //messages: {
+                //    noResults: "", results: ""
+                //}
+            });
+        })*@
+        $('#ModalProductList').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var recipient = button.data('whatever'); // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this);
+            //modal.find('.modal-title').text('New message to ' + recipient);
+            //modal.find('.modal-body input').val(recipient);
+            var body = modal.find('.modal-body');
+            GetProductList($('#ModalProductList').data('url'), body);
+        })
+        function GetProductList(url, body) {
+            $.get(url, function (d) {
+                body.html(d);
+                $('#ModalProductList').find('.pagination li a').each(function () {
+                    $(this).attr('data-url', $(this).attr('href')).attr('href', '#')
+                })
+            });
+        }
+        $(document).on('click', '#ModalProductList .pagination li a', function () {
+            var url = $(this).attr('data-url');//undefined
+            if (url != null)
+                GetProductList(url, $('#ModalProductList').find('.modal-body'));
+        })
+        $(document).on('click', '#ModalProductList .orderby', function () {
+            var url = $(this).attr('data-url');//undefined
+            if (url != null)
+                GetProductList(url, $('#ModalProductList').find('.modal-body'));
+        })
+        $(document).on('click', '#search-addon-partial', function () {
+            var url = null;
+            //if ($('#searchString').val().length > 0) {
+            url = "@(Html.Raw(Url.Action("ProductList", new
+                {
+                    order = ViewBag.order,
+                    flag = ViewBag.flag,
+                    })))";
+            url += (url.indexOf("?") > 0 ? url : "?") + "&searchString=" + $('#searchString').val();
+            //}
+            if (url != null)
+                GetProductList(url, $('#ModalProductList').find('.modal-body'));
+        })
+        $(document).on('click', '#ModalProductList .selected', function () {
+            var table = $('#TableProductSelected');
+            var html = '';
+            var totalItem = 0;
+            var totalQuantity = 0;
+            var totalPrice = 0;
+            var listItem = '';
+            $('#ModalProductList').find('.chkitem').each(function () {
+                if ($(this).prop('checked') == true) {
+                    var parent = $(this).parents('tr');
+                    var itemID = $(this).val();
+                    var itemCode = parent.children('td:eq(1)').html();
+                    var itemName = parent.children('td:eq(2)').html();
+                    var itemPriceOld = parent.children('td:eq(4)').html();
+                    var itemPrice = parent.children('td:eq(5)').html();
+                    var quantity = parent.find('input[name="quantity"]').val();
+                    var total = parseFloat(itemPrice.replace(/,/gi, '')) * parseInt(quantity);
+                    totalItem++;
+                    totalPrice += total;
+                    totalQuantity += parseInt(quantity);
+                    html += '<tr>';
+                    html += '<td>' + itemCode + '</td>';
+                    html += '<td>' + itemName + '</td>';
+                    html += '<td class="priceVND">' + itemPrice + '</td>';
+                    html += '<td>' + quantity + '</td>';
+                    html += '<td class="priceVND">' + (total).format() + '</td>';
+                    html += '</tr>';
+                    listItem += '<input type="hidden" name="listItem[]" value="' + parent.attr('id') + '|' + itemName + '|' + quantity + '|' + itemPriceOld.replace(/,/gi, '') + '|' + itemPrice.replace(/,/gi, '') + '" />';
+                }
+            })
+            html += "<tr>"
+            html += '<td colspan="3"><b>Tổng cộng</b></td>';
+            html += '<td><b>' + totalQuantity + '</b></td>';
+            html += '<td class="priceVND"><b>' + totalPrice.format() + '</b></td>';
+            html += "<tr>"
+            $('#total_item').val(totalItem);
+            $('#total_quantity').val(totalQuantity);
+            $('#total_price').val(totalPrice);
+            $('#listItem').html(listItem);
+            table.show();
+            table.children('tbody').html(html);
+        })
+    </script>
+}

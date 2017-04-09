@@ -1,0 +1,81 @@
+﻿@model GymManager.Models.sub_item
+
+@{
+    ViewBag.Title = "Quản lý thông số";
+    ViewBag.ContentTitle = "Cập nhật thông số";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.id)
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin khách hàng</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="value">Tên thông tin</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" data-val="true"
+                                   data-val-required="Vui lòng tên khách hàng" id="value" name="value" type="text" value="@Html.DisplayFor(m => m.value)">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="value" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="desc">Chú thích</label>
+                        <div class="col-md-9 asterisk">
+                            <textarea class="tinymce" name="desc">@Html.Raw(Model.desc)</textarea>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người lập</label>
+                        <label class="col-md-9">@GymManager.Controllers.BaseController.GetUser(Model.created_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày lập</label>
+                        <label class="col-md-9">@(Model.created_at.HasValue ? Model.created_at.Value.ToString("dd/MM/yyyy hh:mm") : VinaphoneCommon.Language.emptyvl)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người sửa</label>
+                        <label class="col-md-9">@GymManager.Controllers.BaseController.GetUser(Model.updated_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày sửa</label>
+                        <label class="col-md-9">@(Model.updated_at.HasValue ? Model.updated_at.Value.ToString("dd/MM/yyyy hh:mm") : VinaphoneCommon.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" @(Model.flag == 1 ? "checked" : "") /> @VinaphoneCommon.Language.active</label>
+                            <label><input type="radio" name="flag" value="0" @(Model.flag == 0 ? "checked" : "") /> @VinaphoneCommon.Language.draft</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@VinaphoneCommon.Language.update" class="btn btn-primary" />
+                    @Html.ActionLink(VinaphoneCommon.Language.backlink, "Index", null, new { @class = "btn btn-info" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+}

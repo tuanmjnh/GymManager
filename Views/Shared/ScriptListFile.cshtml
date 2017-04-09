@@ -1,0 +1,68 @@
+﻿<script src="@TM.Url.BaseUrl/Scripts/bootstrap-confirmation.min.js"></script>
+<script>
+    $(function () {
+        //$(document).ajaxComplete(function () {
+        //})
+        $('.delete-row').confirmation({
+            popout: true,
+            singleton: true,
+            placement: 'left',
+            html: true,
+            title: 'Xác nhận xóa',
+            btnOkLabel: 'Chấp nhận',
+            btnCancelLabel: 'Hủy bỏ',
+            btnOkClass: 'btn-sm btn-primary',
+            btnCancelClass: 'btn-sm btn-default',
+            onConfirm: function () {
+                var parent = $(this).parents('tr');
+                $.get("@TM.Url.BaseUrl/User/update_flag?uid=" + parent.attr('id'), function (a) {
+                    $(parent).fadeOut(function () {
+                        $(this).remove()
+                    });
+                    if (a.success)
+                        $('#TMAlert').TMAlert({ message: a.success });
+                    else
+                        $('#TMAlert').TMAlert({ type: "error", message: a.danger });
+                });
+            }
+        });
+        $('.btn-delall').confirmation({
+            popout: true,
+            singleton: true,
+            placement: 'left',
+            html: true,
+            title: 'Xác nhận xóa',
+            btnOkLabel: 'Chấp nhận',
+            btnCancelLabel: 'Hủy bỏ',
+            btnOkClass: 'btn-sm btn-primary',
+            btnCancelClass: 'btn-sm btn-default',
+            onConfirm: function () {
+                var uid = [];
+                var row = [];
+                $('.chkitem').each(function () {
+                    if ($(this).prop('checked') === true) {
+                        var parent = $(this).parents('tr');
+                        uid.push(parent.attr('id'));
+                        row.push(parent);
+                    }
+                })
+                $.get("@TM.Url.BaseUrl/User/update_flag?uid=" + uid, function (a) {
+                    for (var i = 0; i < row.length; i++) {
+                        $(row[i]).fadeOut(function () {
+                            $(this).remove()
+                        });
+                    }
+                    if (a.success)
+                        $('#TMAlert').TMAlert({ message: a.success });
+                    else
+                        $('#TMAlert').TMAlert({ type: "error", message: a.danger });
+                });
+            }
+        });
+
+        $.fn.TMCheckBox(".chkall", ".chkitem", ".btn-delall");
+        $('.link-action').on('click', function () {
+            window.location = $(this).parents('tr').children().children().attr('href');
+        })
+    })
+</script>

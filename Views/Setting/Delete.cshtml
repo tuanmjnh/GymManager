@@ -1,0 +1,73 @@
+﻿@model GymManager.Models.setting
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>setting</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.module_key)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.module_key)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.sub_key)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sub_key)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.value)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.value)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.sub_value)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sub_value)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.desc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.desc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.extra)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.extra)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

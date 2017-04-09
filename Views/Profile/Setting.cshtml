@@ -1,0 +1,52 @@
+﻿@model GymManager.Models.setting
+@{
+    ViewBag.Title = "Cập nhật thông tin";
+    ViewBag.ContentTitle = "Cập nhật thông tin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <hr />
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+        <input type="hidden" id="id" name="id" value="@Html.DisplayFor(model=> model.id)" />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Cài đặt tài khoản</h3>
+                </div>
+                <div class="panel-body label-center">
+                    <div class="form-group">
+                        <label class="control-label col-md-3" for="full_name">Hiển thị nhãn Form</label>
+                        <div class="checkbox text-left">
+                            @{
+                                var yes = GymManager.Controllers.BaseController.Value(VinaphoneCommon.Auth.id().ToString(), VinaphoneCommon.Setting.sub_key.form_use_label);
+                            }
+                            <label><input type="radio" name="@VinaphoneCommon.Setting.sub_key.form_use_label" value="@VinaphoneCommon.Setting.value.yes" @(yes == null ? "checked" : (yes == VinaphoneCommon.Setting.value.yes.ToString() ? "checked" : "")) /> @VinaphoneCommon.Language.active</label>
+                            <label><input type="radio" name="@VinaphoneCommon.Setting.sub_key.form_use_label" value="@VinaphoneCommon.Setting.value.no" @(yes == VinaphoneCommon.Setting.value.no.ToString() ? "checked" : "") /> @VinaphoneCommon.Language.deactive</label>
+                        </div>
+                        @*<span class="field-validation-valid text-danger" data-valmsg-for="flag" data-valmsg-replace="true"></span>*@
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <input type="submit" value="@VinaphoneCommon.Language.update" class="btn btn-primary" />
+                    @Html.ActionLink(VinaphoneCommon.Language.backlink, "../", null, new { @class = "btn btn-info" })
+                    @*@Html.ActionLink(VinaphoneCommon.Language.backlink, "Index", null, new { @class = "btn btn-info" })*@
+
+                    @*<input type="submit" value="@VinaphoneCommon.Language.update" class="btn btn-default" />*@
+                </div>
+            </div>
+        </div>
+    </div>
+                                }
+@section ScriptForm { @Html.Partial("ScriptForm")}

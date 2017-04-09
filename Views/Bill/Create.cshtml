@@ -1,0 +1,251 @@
+﻿@model GymManager.Models.bill
+
+@{
+    ViewBag.Title = "Quản lý Hóa đơn";
+    ViewBag.ContentTitle = "Lập hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin khách hàng</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="customer_id">Tên khách hàng</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" data-val="true"
+                                   data-val-required="Vui lòng tên khách hàng" id="customer_id" name="customer_id" type="text" value="">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="customer_id" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="desc">Chọn sản phẩm</label>
+                        <div class="col-md-9 asterisk">
+                            <span class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="glyphicon glyphicon-search"></i> Chọn</span>
+                            @*@Ajax.ActionLink("Chọn sản phẩm", "ProductList", null, new AjaxOptions()
+                                {
+                                    HttpMethod = "GET",
+                                    AllowCache = false,
+                                    InsertionMode = InsertionMode.InsertAfter,
+                                    UpdateTargetId = "posts-wrapper"
+                                },
+                                new { @class = "btn btn-success", @data_toggle = "modal", @data_target = "#myModal" })*@
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <table id="TableProductSelected" class="table table-hover table-bordered table-head table-responsive" style="display:none">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <input type="hidden" id="total_item" name="total_item" value="0" />
+                        <input type="hidden" id="total_quantity" name="total_quantity" value="0" />
+                        <input type="hidden" id="total_price" name="total_price" value="0" />
+                        <div id="listItem"></div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin thêm</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="desc">Chú thích</label>
+                        <div class="col-md-9 asterisk">
+                            <textarea id="desc" name="desc" class="tinymce"></textarea>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" checked /> Thanh toán</label>
+                            <label><input type="radio" name="flag" value="0" /> Nợ</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="Lập hóa đơn" class="btn btn-primary" />
+                    @Html.ActionLink(VinaphoneCommon.Language.backlink, "Index", null, new { @class = "btn btn-info" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal -->
+<div class="modal fade bs-example-modal-lg" id="ModalProductList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-url='@Url.Action("ProductList")'>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-toggle="tooltip" data-placement="right" title="Đóng"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Chọn sản phẩm</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <span type="button" class="btn btn-default" data-dismiss="modal">Quay lại</span>
+                <span type="button" class="btn btn-primary selected" data-dismiss="modal">Chọn</span>
+            </div>
+        </div>
+    </div>
+</div>
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        $.fn.TMCheckBox(".chkall", ".chkitem", ".btn-chk");
+        $('#customer_id').autocomplete({
+            source: '@Url.Action("getCustomer")',
+            minLength: 2
+        });
+        @*$(function () {
+            $('#customer_id').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("getCustomer")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { customer_id: request.term },
+                        success: function (data) {
+                            console.log(data)
+                            response($.map(data, function (item) {
+                                return { label: item.full_name, value: item.full_name };
+                            }))
+
+                        }
+                    })
+                },
+                //messages: {
+                //    noResults: "", results: ""
+                //}
+            });
+        })*@
+        $('#ModalProductList').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var recipient = button.data('whatever'); // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this);
+            //modal.find('.modal-title').text('New message to ' + recipient);
+            //modal.find('.modal-body input').val(recipient);
+            var body = modal.find('.modal-body');
+            GetProductList($('#ModalProductList').data('url'), body);
+        })
+        function GetProductList(url, body) {
+            $.get(url, function (d) {
+                body.html(d);
+                $('#ModalProductList').find('.pagination li a').each(function () {
+                    $(this).attr('data-url', $(this).attr('href')).attr('href', '#')
+                })
+                $('#ModalProductList').find('.priceVND').each(function () {
+                    $(this).html(parseInt($(this).html()).format())
+                }) 
+            });
+        }
+        $(document).on('click', '#ModalProductList .pagination li a', function () {
+            var url = $(this).attr('data-url');//undefined
+            if (url != null)
+                GetProductList(url, $('#ModalProductList').find('.modal-body'));
+        })
+        $(document).on('click', '#ModalProductList .orderby', function () {
+            var url = $(this).attr('data-url');//undefined
+            if (url != null)
+                GetProductList(url, $('#ModalProductList').find('.modal-body'));
+        })
+        $(document).on('click', '#search-addon-partial', function () {
+            var url = null;
+            //if ($('#searchString').val().length > 0) {
+            url = "@(Html.Raw(Url.Action("ProductList", new
+                {
+                    order = ViewBag.order,
+                    flag = ViewBag.flag,
+                    })))";
+            url += (url.indexOf("?") > 0 ? url : "?") + "&searchString=" + $('#searchString').val();
+            //}
+            if (url != null)
+                GetProductList(url, $('#ModalProductList').find('.modal-body'));
+        })
+        $(document).on('click', '#ModalProductList .selected', function () {
+            var table = $('#TableProductSelected');
+            var html = '';
+            var totalItem = 0;
+            var totalQuantity = 0;
+            var totalPrice = 0;
+            var listItem = '';
+            $('#ModalProductList').find('.chkitem').each(function () {
+                if ($(this).prop('checked') == true) {
+                    var parent = $(this).parents('tr');
+                    var itemID = $(this).val();
+                    var itemCode = parent.children('td:eq(1)').html();
+                    var itemName = parent.children('td:eq(2)').html();
+                    var itemPriceOld = parent.children('td:eq(4)').find('#itemPriceOld').val();
+                    var itemPrice = parent.children('td:eq(5)').find('#itemPrice').val();
+                    var quantity = parent.find('input[name="quantity"]').val();
+                    var total = parseFloat(itemPrice) * parseInt(quantity);
+                    totalItem++;
+                    totalPrice += total;
+                    totalQuantity += parseInt(quantity);
+                    html += '<tr>';
+                    html += '<td>' + itemCode + '</td>';
+                    html += '<td>' + itemName + '</td>';
+                    html += '<td class="priceVND">' + parseFloat(itemPrice).format() + '</td>';
+                    html += '<td>' + quantity + '</td>';
+                    html += '<td class="priceVND">' + (total).format() + '</td>';
+                    html += '</tr>';
+                    listItem += '<input type="hidden" name="listItem[]" value="' + parent.attr('id') + '|' + itemName + '|' + quantity + '|' + itemPriceOld.replace(/,/gi, '') + '|' + itemPrice.replace(/,/gi, '') + '" />';
+                }
+            })
+            if (totalItem > 0) {
+                html += "<tr>"
+                html += '<td colspan="3"><b>Tổng cộng</b></td>';
+                html += '<td><b>' + totalQuantity + '</b></td>';
+                html += '<td class="priceVND"><b>' + totalPrice.format() + '</b></td>';
+                html += "<tr>"
+                $('#total_item').val(totalItem);
+                $('#total_quantity').val(totalQuantity);
+                $('#total_price').val(totalPrice);
+                $('#listItem').html(listItem);
+                table.show();
+                table.children('tbody').html(html);
+            }
+        })
+        //Quantity
+        $(document).on('change', 'input[name="quantity"]', function () {
+            var $this = $(this);
+            var id = $this.parents('tr').attr('id');
+            var qty = $this.val();
+            $.post('@Url.Action("getQuantity")', { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(), id: id, quantity: qty }, function (d) {
+                if (d.data) {
+                    $this.val(d.data);
+                }
+            })
+
+        })
+    </script>
+}

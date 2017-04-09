@@ -1,0 +1,109 @@
+﻿@model GymManager.Models.bill
+
+@{
+    ViewBag.Title = "Quản lý Hóa đơn";
+    ViewBag.ContentTitle = "Lập hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin khách hàng</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="customer_id">Tên khách hàng</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" data-val="true"
+                                   data-val-required="Vui lòng tên khách hàng" id="customer_id" name="customer_id" type="text" value="">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="customer_id" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="desc">Chọn sản phẩm</label>
+                        <div class="col-md-9 asterisk">
+                            <span class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="glyphicon glyphicon-search"></i> Chọn</span>
+                            @*@Ajax.ActionLink("Chọn sản phẩm", "ProductList", null, new AjaxOptions()
+                                {
+                                    HttpMethod = "GET",
+                                    AllowCache = false,
+                                    InsertionMode = InsertionMode.InsertAfter,
+                                    UpdateTargetId = "posts-wrapper"
+                                },
+                                new { @class = "btn btn-success", @data_toggle = "modal", @data_target = "#myModal" })*@
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <table id="TableProductSelected" class="table table-hover table-bordered table-head table-responsive" style="display:none">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <input type="hidden" id="total_item" name="total_item" value="0" />
+                        <input type="hidden" id="total_quantity" name="total_quantity" value="0" />
+                        <input type="hidden" id="total_price" name="total_price" value="0" />
+                        <div id="listItem"></div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin thêm</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="desc">Chú thích</label>
+                        <div class="col-md-9 asterisk">
+                            <textarea id="desc" name="desc" class="tinymce"></textarea>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-option col-md-12">
+                        <li>
+                            <label class="option-label" for="flag">Trạng thái</label>
+                            <div class="">
+                                <div class="checkbox">
+                                    <label><input type="radio" name="flag" value="1" checked /> Thanh toán</label>
+                                    <label><input type="radio" name="flag" value="0" /> Nợ</label>
+                                </div>
+                                @*<span class="field-validation-valid text-danger" data-valmsg-for="flag" data-valmsg-replace="true"></span>*@
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@VinaphoneCommon.Language.update" class="btn btn-primary" />
+                    @Html.ActionLink(VinaphoneCommon.Language.backlink, "Index", null, new { @class = "btn btn-info" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+}

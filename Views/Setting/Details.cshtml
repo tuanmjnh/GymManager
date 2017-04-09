@@ -1,0 +1,67 @@
+﻿@model GymManager.Models.setting
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>setting</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.module_key)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.module_key)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.sub_key)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sub_key)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.value)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.value)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.sub_value)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sub_value)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.desc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.desc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.extra)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.extra)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

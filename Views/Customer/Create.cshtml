@@ -1,0 +1,288 @@
+﻿@model GymManager.Models.customer
+
+@{
+    ViewBag.Title = "Quản lý học viên";
+    ViewBag.ContentTitle = "Thêm mới học viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin học viên</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="full_name">Tên học viên</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" data-val="true"
+                                   data-val-required="Vui lòng tên học viên" id="full_name" name="full_name" type="text" value="">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="full_name" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="date_of_birth">Ngày sinh DD/MM/YYYY</label>
+                        <div class="col-md-9">
+                            <div class="input-group date datetimepicker">
+                                <input type="text" class="form-control" id="date_of_birth" name="date_of_birth" autocomplete="off" />
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="mobile">Số điện thoại</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="mobile" name="mobile" type="number" value=""
+                                   data-val="true" data-val-number="Điện thoại phải là số">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="mobile" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="address">Địa chỉ</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="address" name="address" type="text" value=""
+                                   data-val="true">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="address" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="facebook">Facebook</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="facebook" name="facebook" type="text" value=""
+                                   data-val="true">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="facebook" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="email">Email</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="email" name="email" type="email" value=""
+                                   data-val="true" data-val-email="Sai định dạng Email">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="email" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="images">Hình ảnh</label>
+                        <div class="col-md-9">
+                            <input type="file" id="file-images" name="images" class="form-control" multiple>
+                        </div>
+                        <div class="clearfix mb20"></div>
+                        <div class="col-md-12 images-list"></div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin thẻ</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="card_id">Mã thẻ</label>
+                        <div class="col-md-6 asterisk">
+                            <div class="input-group">
+                                <input class="form-control text-box single-line" id="card_id" name="card_id" type="text" value=""
+                                       placeholder="Mã thẻ" data-toggle="tooltip" data-placement="left" title="Mã thẻ"
+                                       data-val-remote="Mã thẻ đã tồn tại !" data-val-remote-additionalfields="*.card_id"
+                                       data-val-remote-type="POST" data-val-remote-url="@Url.Action("check_exist_card_id")"
+                                       data-val="true" data-val-required="Vui lòng nhập mã thẻ">
+                                <span class="input-group-addon btn-pointer random-cart"><span class="fa fa-refresh" aria-hidden="true"></span></span>
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="card_id" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="cardlist">Loại thẻ</label>
+                        <div class="col-md-9">
+                            <div class="btn-group" id="cardlist" data-toggle="buttons">
+                                @{var index = 0;}
+                                @foreach (var item in (List<GymManager.Models.item>)ViewBag.Card)
+                                {
+                                    <label class="btn btn-success @(index == 0 ? "active" : "")">
+                                        <input type="radio" name="code_key" id="@item.id" autocomplete="off" value="@item.id" data-quantity="@item.quantity" data-value="@(item.price.HasValue?item.price.Value.ToString("0"):"0")" @(index == 0 ? "checked" : "")> @item.title
+                                    </label>
+                                    index++;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="startDate">Ngày bắt đầu</label>
+                        <div class="col-md-9">
+                            <div class="input-group date datetimepicker">
+                                <input type="text" class="form-control" id="startDate" name="startDate" autocomplete="off" value=""
+                                       data-val="true" data-val-required="Vui lòng nhập ngày bắt đầu" />
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="startDate" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="totalPaid">Tổng thanh toán</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line priceVND" id="totalPaid" name="price" type="number" value="0"
+                                   data-val="true" data-val-number="Điện thoại phải là số">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="totalPaid" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="totalNotPay">Số tiền nợ lại</label>
+                        <span class="col-md-9 asterisk totalNotPay priceVND" style="padding-top:7px">0</span>
+                        <input type="hidden" id="totalNotPay" name="price_old" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="totalPay">Tổng phải thanh toán</label>
+                        <span class="col-md-9 asterisk totalPay priceVND" style="padding-top:7px">0</span>
+                        <input type="hidden" id="quantity" name="quantity" value="1" />
+                        <input type="hidden" id="totalPay" name="totalPay" value="0" />
+                        <input type="hidden" id="totalPay_old" name="totalPay_old" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="desc">Ghi chú</label>
+                        <div class="col-md-9 asterisk">
+                            <textarea id="desc" name="desc_card" class="tinymce"></textarea>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông số cơ thể</h3>
+                </div>
+                <div class="panel-body">
+                    @foreach (var item in (List<GymManager.Models.sub_item>)ViewBag.PersonInfo)
+                    {
+                        <div class="form-group">
+                            <label class="control-label setting-label col-md-2" for="@item.id">@item.value</label>
+                            <div class="col-md-4 asterisk">
+                                <div class="input-group pl-pr15">
+                                    <input class="form-control text-box single-line" data-val="true"
+                                           data-val-number="@item.value phải là số" id="@item.id" name="@(item.id)[]" type="number" value="">
+                                    <span class="input-group-addon"><span class="fa fa-sort-numeric-desc" aria-hidden="true"></span></span>
+                                </div>
+                            </div>
+                            @*<label class="control-label setting-label" style="display:none">@item.value mục tiêu</label>*@
+                            <div class="col-md-4 asterisk">
+                                <div class="input-group pl-pr15">
+                                    <input class="form-control text-box single-line" data-val="true"
+                                           data-val-number="@item.value mục tiêu phải là số" name="@(item.id)[]" type="number" value="">
+                                    <span class="input-group-addon"><span class="fa fa-sort-numeric-desc" aria-hidden="true"></span></span>
+                                </div>
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="@item.id" data-valmsg-replace="true"></span>
+                        </div>
+                    }
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin thêm</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12 asterisk">
+                            <textarea name="desc" class="desc-details tinymce"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" checked /> @VinaphoneCommon.Language.activity</label>
+                            <label><input type="radio" name="flag" value="0" /> @VinaphoneCommon.Language.leave</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@VinaphoneCommon.Language.addnew" class="btn btn-primary" />
+                    @Html.ActionLink(VinaphoneCommon.Language.backlink, "Index", null, new { @class = "btn btn-info" })
+                </div>
+            </div>
+        </div>
+    </div>
+                                    }
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script type="text/javascript">
+        $('#file-images').readURL({ width: 128 });
+        $(function () {
+            $('.datetimepicker').datetimepicker({
+                defaultDate: new Date(),
+                format: 'DD/MM/YYYY',
+            });
+        });
+        $('.random-cart').on('click', function () {
+            var parent = $(this).parent();
+            var input = parent.find('input[name="card_id"]');
+            var label = parent.next();
+            $.get('@Url.Action("getCardID")', function (d) {
+                if (d.data) {
+                    input.val(d.data);
+                    input.removeClass('input-validation-error');
+                    label.html('');
+                }
+                if (d.danger)
+                    $('#TMAlert').TMAlert({ type: "error", message: d.danger });
+            })
+        })
+
+        function cardlist(radio) {
+            $('.totalNotPay').html('0');
+            $('#totalNotPay').val('0');
+            //$('#quantity').val('1');
+            if (radio.prop('checked') == true) {
+                $('.totalPay').html(radio.attr('data-value'));
+                $('#totalPay').val(radio.attr('data-value'));
+                $('#totalPaid').val(radio.attr('data-value'));
+                $('#totalPay_old').val(radio.attr('data-value'));
+                $('#quantity').val(radio.attr('data-quantity'));
+            }
+        }
+        $('#cardlist').on('click', '.btn', function () {
+            radio = $(this).children('input[type="radio"]').prop('checked', true);
+            cardlist(radio);
+            $('.totalPay').html(parseFloat(radio.attr('data-value')).format());
+        })
+        $('#cardlist input[type="radio"]').each(function () {
+            cardlist($(this));
+        })
+        function ChangeValue() {
+            //var quantity = parseInt($('#quantity').val());
+            //var totalPay = parseFloat($('#totalPay_old').val()) * quantity;
+            var totalPay = $('#totalPay_old').val();
+            var totalPaid = parseFloat($('#totalPaid').val());
+            var totalNotPay = totalPay - totalPaid;
+            var totalPay = totalPay;
+            $('.totalNotPay').html(totalNotPay.format());
+            $('#totalNotPay').val(totalNotPay);
+            $('.totalPay').html(totalPay.format());
+            $('#totalPay').val(totalPay);
+        }
+        $('#totalPaid').on('change', function () {
+            ChangeValue();
+        })
+        $('#quantity').on('change', function () {
+            ChangeValue();
+        })
+    </script>
+}

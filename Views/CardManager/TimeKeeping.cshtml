@@ -1,0 +1,394 @@
+﻿@model PagedList.IPagedList<dynamic>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Quản lý chấm tập";
+    ViewBag.ContentTitle = "Quản lý chấm tập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="TimeKeepingAlert"></div>
+<button class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="glyphicon glyphicon-plus"></i> Tạo hóa đơn vé khách</button>
+@Html.Partial("search")
+<div class="clearfix"></div>
+@if (Model.Count() < 1)
+{
+    <div class="alert alert-warning" role="alert">@VinaphoneCommon.Language.emptydb</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-head">
+            <thead>
+                <tr>
+                    @*<th class="tbl-index">STT</th>*@
+                    <th>
+                        @Html.ActionLink("Tên Khách hàng", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Mã thẻ", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Loại thẻ", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Tổng tiền", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Đã trả", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Còn nợ", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>Bắt đầu</th>
+                    <th>Kết thúc</th>
+                    <th class="col-md-1 text-center">Gạch nợ</th>
+                    <th class="col-md-1 text-center">SL.Gạch</th>
+                    <th class="col-md-1 text-center">Chấm tập</th>
+                    @*<th class="tbl-checkbox">
+                            <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
+                        </th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @*@{int index = 0;}*@
+                @foreach (dynamic item in (IEnumerable<dynamic>)Model)
+                {
+                    //index += 1;
+                    <tr id="@item.id">
+                        @*<td class="center">@(index + (Model.PageNumber - 1) * Model.PageSize)</td>*@
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.customerid,"Customer",null)">@item.fullname</a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.customerid,"Customer",null)">@item.cardid</a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.id)">
+                                @if (item.extras == GymManager.Controllers.AppKey.TypePayYear)
+                                {
+                                    <span>Thẻ Năm</span>
+                                }
+                                else if (item.extras == GymManager.Controllers.AppKey.TypePayMonth)
+                                {
+                                    <span>Thẻ Tháng</span>
+                                }
+                                else if (item.extras == GymManager.Controllers.AppKey.TypePayMonths)
+                                {
+                                    <span>Thẻ Quý</span>
+                                }
+                                else
+                                {
+                                    <span>Thẻ ngày</span>
+                                }
+                            </a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.customerid,"Customer",null)" class="priceVND">@(decimal.Parse(item.title).ToString())</a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.customerid,"Customer",null)" class="priceVND">@(((decimal)item.price).ToString())</a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.customerid,"Customer",null)" class="priceVND">@(((decimal)item.priceold).ToString())</a>
+                        </td>
+                        @if (item.extras == GymManager.Controllers.AppKey.TypePayDay)
+                        {
+                            <td><span id="quantitytotal">@item.quantitytotal</span> Buổi</td>
+                            <td>@item.quantity Buổi</td>
+                        }
+                        else
+                        {
+                            <td>@(((DateTime)item.startedat).ToString("dd/MM/yyyy"))</td>
+                            <td>@(((DateTime)item.endedat).ToString("dd/MM/yyyy"))</td>
+                        }
+                        <td class="text-center">
+                            @if (item.priceold <= 0)
+                            {
+                                <span class="label label-success">Hết nợ</span>
+                            }
+                            else
+                            {
+                                <span class="btn btn-danger removePriceOld"><i class="fa fa-times" aria-hidden="true"></i></span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            @if (item.extras == GymManager.Controllers.AppKey.TypePayDay)
+                            {
+                                if (item.checkcard == null)
+                                {
+                                    <input type="number" id="quantity" name="quantity" class="form-control col-md-1" value="1" />
+                                }
+                                else
+                                {
+                                    <span class="label label-success">@((item.checkcard).value)</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="label label-success">1</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            @*<label class="label label-primary">Đi tập</label>*@
+                            @if (item.checkcard == null)
+                            {
+                                <button class="btn btn-warning btn-timekeeping" data-extras="@item.extras" data-toggle="tooltip" data-placement="right" title="Chấm tập"><i class="fa fa-check" aria-hidden="true"></i></button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success" data-extras="@item.extras" data-toggle="tooltip" data-placement="right" title="Đã chấm"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
+                            }
+                            @if (item.extras == GymManager.Controllers.AppKey.TypePayDay)
+                            {
+                                var qty = (long)item.quantity - (long)item.quantitytotal;
+                                if (qty <= 5)
+                                {
+                                    <i class="fa fa-exclamation-circle text-danger pointer" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Còn @qty Buổi"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-heart text-success" aria-hidden="true"></i>
+                                }
+                            }
+                            else
+                            {
+                                var qty = ((DateTime)item.endedat - (DateTime)item.startedat).Days;
+                                if (qty <= 5)
+                                {
+                                    <i class="fa fa-exclamation-circle text-danger pointer" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Còn @qty Ngày"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-heart text-success" aria-hidden="true"></i>
+                                }
+                            }
+                        </td>
+                        @*<td>
+                                <label><input type="checkbox" name="checkbox" value="@item.id" class="chkitem" /></label>
+                            </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination-list">
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
+        @Html.PagedListPager(Model, page => Url.Action("TimeKeeping",
+                         new
+                         {
+                             page,
+                             order = ViewBag.order,
+                             currentFilter = ViewBag.currentFilter,
+                             flag = ViewBag.flag
+                         }))
+    </div>
+}
+
+<!-- Modal -->
+@*@using (Html.BeginForm("AddBillClient", "CardManager"))
+    {
+        @Html.AntiForgeryToken()*@
+<div class="modal fade bs-example-modal-lg" id="ModalProductList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-url='@Url.Action("ProductList")'>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-toggle="tooltip" data-placement="right" title="Đóng"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Tạo hóa đơn vé khách (theo lần)</h4>
+            </div>
+            <div class="modal-body">
+                <div id="AddBillClientAlert"></div>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-3" for="customer">Tên khách hàng</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="customer" name="customer" type="text" value=""
+                                   data-val="true" data-val-required="Vui lòng nhập tên khách hàng">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="customer" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Số lượng</label>
+                        <div class="col-md-9">
+                            <span class="detail-label">1 lần</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Loại thẻ</label>
+                        <div class="col-md-9 btn-group" id="cardlist" data-toggle="buttons">
+                            @{var index = 0;}
+                            @foreach (var item in (List<GymManager.Models.item>)ViewBag.cardPersonDay)
+                            {
+                                <label class="btn btn-success @(index == 0 ? "active" : "")">
+                                    <input type="radio" name="code_key" id="@item.id" autocomplete="off" value="@item.id" data-value="@item.price" @(index == 0 ? "checked" : "")> @item.title
+                                </label>
+                                index++;
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Thành tiền</label>
+                        <div class="col-md-9 asterisk">
+                            <span class="priceVND detail-label" id="lblprice">0</span>
+                            <input type="hidden" id="price" name="price" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3" for="desc">Chú thích</label>
+                        <div class="col-md-9 asterisk">
+                            <textarea id="desc" name="desc" class="tinymce"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <span type="button" class="btn btn-default" data-dismiss="modal">Quay lại</span>
+                <input type="submit" id="AddBillClient" class="btn btn-primary" value="@VinaphoneCommon.Language.addnew">
+            </div>
+        </div>
+    </div>
+</div>
+@*}*@
+@section ScriptList {
+    @Html.Partial("ScriptList")
+    <script>
+        $('#cardlist').on('click', '.btn', function () {
+            radio = $(this).children('input[type="radio"]').prop('checked', true);
+            if (radio.prop('checked') == true) {
+                $('#lblprice').html(parseFloat(radio.attr('data-value')).format(4));
+                $('#price').html(radio.attr('data-value'));
+            }
+        })
+        function LoadTimeKeeping() {
+            $.get('@Url.Action("LoadTimeKeeping")', function (d) {
+                if (d.data) {
+                    if ((d.data.length) > 0) {
+                        $('#TimeKeepingAlert').TMAlert({ type: 'success', message: 'Hiện đã có <b id="TimeKeepingCount">' + (d.data).length + '</b> học viên và <b id="TimeKeepingClient">' + d.Client.length + '</b> khách được chấm tập (@DateTime.Now.ToString("dd/MM/yyyy"))' });
+                    } else {
+                        $('#TimeKeepingAlert').TMAlert({ type: 'warning', message: 'Hiện chưa có học viên được chấm tập' });
+                    }
+                }
+                if (d.danger)
+                    $('#TMAlert').TMAlert({ type: 'error', message: d.danger });
+            })
+        }
+        $(function () {
+            LoadTimeKeeping();
+        })
+        @*$('.btn-timekeeping').on('click', function () {
+            var $this = $(this);
+            var id = $this.parents('tr').attr('id');
+            $.post('@Url.Action("DoTimeKeeping")', { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(), id: id }, function (d) {
+                if (d.success) {
+                    $this.removeClass('btn-warning')
+                        .removeClass('btn-timekeeping')
+                        .addClass('btn-success')
+                        .children('i').removeClass('fa-check')
+                                      .addClass('fa-check-square-o');
+                    if ($this.attr('data-extras') == '@GymManager.Controllers.AppKey.TypePayDay') {
+                        var qty = $('#quantitytotal');
+                        qty.html(parseInt(qty.html()) + 1);
+                    }
+                    //
+                    LoadTimeKeeping();
+                }
+            })
+        })*@
+        $('.btn-timekeeping').confirmation({
+            popout: true,
+            singleton: true,
+            placement: 'left',
+            html: true,
+            title: 'Xác nhận chấm tập',
+            btnOkLabel: 'Chấp nhận',
+            btnCancelLabel: 'Hủy bỏ',
+            btnOkClass: 'btn-sm btn-primary',
+            btnCancelClass: 'btn-sm btn-default',
+            onConfirm: function () {
+                var $this = $(this);
+                var id = $this.parents('tr').attr('id');
+                $.post('@Url.Action("DoTimeKeeping")', { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(), id: id, quantity: $('#quantity').val() }, function (d) {
+                    if (d.success) {
+                        $this.parent().html('<button class="btn btn-success" data-toggle="tooltip" data-placement="right" title="Đã chấm"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>');
+                        $('#quantity').parent().html('<span class="label label-success">' + $('#quantity').val() + '</span>');
+                        if ($this.attr('data-extras') == '@GymManager.Controllers.AppKey.TypePayDay') {
+                            var qty = $('#quantitytotal');
+                            qty.html(parseInt(qty.html()) + 1);
+                        }
+                        LoadTimeKeeping();
+                    }
+                })
+            }
+        });
+        $('#AddBillClient').on('click', function () {
+            tinyMCE.triggerSave();
+            $.post('@Url.Action("AddBillClient")', { customer: $('#customer').val(), price: $('#price').val(), desc: $("#desc").val(), '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() }, function (d) {
+                if (d.success) {
+                    $('#AddBillClientAlert').TMAlert({ type: 'success', message: d.success });
+                    var Client = $('#TimeKeepingClient');
+                    Client.html(parseInt(Client.html()) + 1);
+                    $('#customer').val('');
+                    tinyMCE.activeEditor.setContent('');
+                }
+            });
+        })
+        $('.removePriceOld').confirmation({
+            popout: true,
+            singleton: true,
+            placement: 'left',
+            html: true,
+            title: 'Xác nhận xóa nợ',
+            btnOkLabel: 'Chấp nhận',
+            btnCancelLabel: 'Hủy bỏ',
+            btnOkClass: 'btn-sm btn-primary',
+            btnCancelClass: 'btn-sm btn-default',
+            onConfirm: function () {
+                var parent = $(this).parents('tr');
+                $.get('@Url.Action("removePriceOld", "Customer",null)?uid=' + parent.attr('id'), function (a) {
+                    if (a.success) {
+                        parent.children('td:eq(5)').children('a').html('0');
+                        parent.children('td:eq(8)').html('<span class="label label-success">Hết nợ</span>');
+                        $('#TMAlert').TMAlert({ type: "success", message: a.success });
+                    }
+                    else
+                        $('#TMAlert').TMAlert({ type: "error", message: a.danger });
+                });
+            }
+        });
+    </script>
+}
